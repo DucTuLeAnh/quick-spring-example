@@ -1,5 +1,6 @@
 package com.example.clientExample.app.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
@@ -13,6 +14,7 @@ public class AppService {
     private final OAuth2AuthorizedClientManager clientManager;
     private final RestClient restClient;
 
+    @Autowired
     public AppService(@Qualifier("authorizedClientManager") OAuth2AuthorizedClientManager clientManager,
                       RestClient.Builder restClientBuilder) {
         this.clientManager = clientManager;
