@@ -23,7 +23,7 @@ public class OAuth2RestClient {
     private <T> T get(String url, String token, Class<T> responseType) {
         return restClient.get()
                 .uri(url)
-                .header("Authorization", "Bearer " + token)
+                //.header("Authorization", "Bearer " + token)
                 .retrieve()
                 .body(responseType);
     }
@@ -34,6 +34,7 @@ public class OAuth2RestClient {
                 .principal("backend-service")
                 .build();
 
+
         OAuth2AuthorizedClient client = clientManager.authorize(request);
         if (client == null) {
             throw new IllegalStateException("Failed to authorize EntraID client");
@@ -42,6 +43,6 @@ public class OAuth2RestClient {
         String token = client.getAccessToken().getTokenValue();
 
         // 2. Use the token to call the remote API
-        return this.get(url, token, responseType);
+        return this.get(url, "token", responseType);
     }
 }

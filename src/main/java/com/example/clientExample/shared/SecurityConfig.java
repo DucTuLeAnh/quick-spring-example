@@ -18,7 +18,7 @@ public class SecurityConfig {
         http
                 // public endpoints
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/public/**", "/").permitAll()  // allow public endpoints
+                        .requestMatchers("/public/**", "/", "/view").permitAll()  // allow public endpoints
                         .anyRequest().authenticated()               // others require auth
                 )
                // .csrf(AbstractHttpConfigurer::disable)  ;

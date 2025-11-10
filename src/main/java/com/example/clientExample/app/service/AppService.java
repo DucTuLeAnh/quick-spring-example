@@ -17,6 +17,7 @@ public class AppService {
     }
 
     public ExampleResponse fetchExampleData() {
+       // return new ExampleResponse(1, "Hans");
         return oAuth2RestClient.fetchData("http://example-data.com", ExampleResponse.class);
     }
 }
