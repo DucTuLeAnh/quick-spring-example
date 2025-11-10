@@ -7,3 +7,10 @@ spring:
     activate:
       on-profile: test
 
+  security:
+    oauth2:
+      resourceserver:
+        opaque-token:
+          introspection-uri: http://localhost:4445/admin/oauth2/introspect
+          client-id: ab8389ca-bc5b-48a2-9dfd-3788950d340d
+          client-secret: secret
