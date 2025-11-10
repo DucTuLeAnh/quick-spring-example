@@ -1,5 +1,6 @@
 package com.example.clientExample.app.controller;
 
+import com.example.clientExample.app.entities.ExampleResponse;
 import com.example.clientExample.app.service.AppService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,7 @@ public class AppController {
     }
 
     @GetMapping("/api/data")
-    public String getData() {
-        return appService.fetchData();
+    public ExampleResponse getData() {
+        return appService.fetchExampleData();
     }
 }
