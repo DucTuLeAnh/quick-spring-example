@@ -1,22 +1,27 @@
 package com.example.clientExample.app.controller;
 
 import com.example.clientExample.app.entities.Event;
+import com.example.clientExample.app.entities.FWObject;
 import com.example.clientExample.app.service.EventQueryService;
+import com.example.clientExample.app.service.FWObjectQueryService;
 import com.example.clientExample.app.service.FwTokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ExperimentalController {
     private final FwTokenService fwTokenService;
     private final EventQueryService eventQueryService;
+    private final FWObjectQueryService objectQueryService;
 
-    public ExperimentalController(FwTokenService fwTokenService, EventQueryService eventQueryService) {
+    public ExperimentalController(FwTokenService fwTokenService, EventQueryService eventQueryService, FWObjectQueryService objectQueryService) {
         this.fwTokenService = fwTokenService;
         this.eventQueryService = eventQueryService;
+        this.objectQueryService = objectQueryService;
     }
 
     @GetMapping("/token")
@@ -30,8 +35,7 @@ public class ExperimentalController {
     }
     @GetMapping("/testquery")
     public String testQuery() {
-
-        List<Event> events = eventQueryService.retrieveAllEventsByDate("2025-11-10", "2025-11-11");
-        return "testquery: ";
+        List<FWObject> events = objectQueryService.retrieveAllRoomObjects();
+        return "testquery: " + events.stream().map(FWObject::name).collect(Collectors.joining(","));
     }
 }
