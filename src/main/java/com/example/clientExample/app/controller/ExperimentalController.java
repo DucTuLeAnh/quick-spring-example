@@ -3,7 +3,7 @@ package com.example.clientExample.app.controller;
 import com.example.clientExample.app.entities.Event;
 import com.example.clientExample.app.service.EventQueryService;
 import com.example.clientExample.app.service.FwTokenService;
-import org.springframework.stereotype.Controller;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,17 +21,17 @@ public class ExperimentalController {
 
     @GetMapping("/token")
     public String testo() {
-        return "is it valid: " + fwTokenService.isTokenValid();
+        return "is it valid: ";
     }
 
     @GetMapping("/createtoken")
-    public String createtoken() {
+    public String createtoken() throws JsonProcessingException {
         return "is it valid: " + fwTokenService.getAuthToken();
     }
     @GetMapping("/testquery")
     public String testQuery() {
 
         List<Event> events = eventQueryService.retrieveAllEventsByDate("2025-11-10", "2025-11-11");
-        return "testquery: " + events.size();
+        return "testquery: ";
     }
 }

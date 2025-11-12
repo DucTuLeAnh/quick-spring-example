@@ -2,39 +2,42 @@ package com.example.clientExample.shared;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestClient;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
-import org.apache.hc.core5.ssl.SSLContextBuilder;
-
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-
 import java.security.cert.X509Certificate;
 
 
 @Configuration
-public class UnsafeRestClient {
+public class RestClientConfig {
+
+
     @Bean
-    public RestClient restClient() throws Exception {
+    @Profile("!test")
+    public RestClient restClient(RestClient.Builder restClientBuilder) throws Exception {
+        return restClientBuilder.build();
+    }
+
+    @Bean
+    @Profile("test")
+    public RestClient unsecureRestClient(RestClient.Builder restClientBuilder) throws Exception {
         // Trust all certificates
         TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
-                    public X509Certificate[] getAcceptedIssuers() { return null; }
-                    public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-                    public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
                 }
         };
 
@@ -48,14 +51,15 @@ public class UnsafeRestClient {
 
         // Use simple request factory (uses HttpURLConnection under the hood)
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(10000);
-        factory.setReadTimeout(10000);
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(5000);
+        // --- Logging interceptor ---
 
-        return RestClient.builder()
+
+        return restClientBuilder
                 .requestFactory(factory)
-                .messageConverters(converters -> {
-                    converters.add(new MappingJackson2HttpMessageConverter());
-                })
+                .requestInterceptor(
+                        (request, body, execution) -> execution.execute(request, body))
                 .build();
     }
 }

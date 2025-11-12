@@ -32,7 +32,7 @@ public class EventQueryService {
                         .queryParam("dayTo", to)
                         .build())
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer "+ this.fwTokenService.getDebugToken())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer "+ this.fwTokenService.getAuthToken())
                 .retrieve()
                 .body(EventResponse.class);
 

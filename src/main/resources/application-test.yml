@@ -1,3 +1,9 @@
+app:
+  fwAppId: ${FW_APP_ID:default}  # uses APP_NAME env var or "MyDefaultApp" as default
+  fwUserName: ${FW_USER_NAME:default}
+  fwKey: ${FW_KEY:default}
+  fwHost: ${FW_HOST:default}
+  fwPort: ${FW_PORT:default}
 spring:
   autoconfigure:
     exclude:

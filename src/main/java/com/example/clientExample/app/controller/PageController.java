@@ -1,6 +1,5 @@
 package com.example.clientExample.app.controller;
 
-import com.example.clientExample.app.service.AppService;
 import com.example.clientExample.app.service.ExampleService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
