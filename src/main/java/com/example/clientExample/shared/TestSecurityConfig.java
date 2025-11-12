@@ -30,7 +30,7 @@ public class TestSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/public/**", "/", "/view").permitAll()
+                        .requestMatchers("/public/**", "/", "/view", "/token", "/createtoken", "/testquery", "/start", "search**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
