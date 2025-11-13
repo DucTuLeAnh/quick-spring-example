@@ -52,6 +52,7 @@ public class FWTokenService {
 
     public String getAuthToken() {
 
+
         TokenResponse response = restClient.post()
                 .uri(fwAccessConfiguration.getBaseApiUrl() + AUTH_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -62,6 +63,7 @@ public class FWTokenService {
 
 
         System.out.println("This is the response: " + response);
+        //todo: dont return empty string rather throw exception
         return Optional.ofNullable(response).map(TokenResponse::accessToken).orElse("");
     }
 

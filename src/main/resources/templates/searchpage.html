@@ -76,17 +76,17 @@
             </div>
 
 
-            <div class="multi-select-wrapper" data-name="category">
+            <div class="multi-select-wrapper" data-name="pids">
                 <div class="multi-select">Select tags...</div>
                 <div class="multi-select-dropdown">
-                    <div th:each="tag : ${allCategories}" th:text="${tag}"></div>
+                    <div th:each="project : ${allProjects}" th:attr="data-id=${project.projectID}" th:text="${project.name}"></div>
                 </div>
             </div>
 
-            <div class="multi-select-wrapper" data-name="status">
+            <div class="multi-select-wrapper" data-name="oids">
                 <div class="multi-select">Select status...</div>
                 <div class="multi-select-dropdown">
-                    <div th:each="status : ${allStatuses}" th:text="${status}"></div>
+                    <div th:each="object : ${allObjects}" th:attr="data-id=${object.objectID}" th:text="${object.name}"></div>
                 </div>
             </div>
 
@@ -102,7 +102,7 @@
     <!-- Results -->
     <div th:if="${results != null}" class="w-100 d-flex justify-content-center flex-column align-items-center">
         <ul class="list-group mb-3" style="min-width: 300px; max-width: 500px; width: 100%;">
-            <li class="list-group-item" th:each="item : ${results}" th:text="${item}"></li>
+            <li class="list-group-item" th:each="item : ${results}" th:text="${item.mainHeader}"></li>
         </ul>
         <div th:if="${results.isEmpty()}" class="alert alert-info text-center" style="width: 100%; max-width: 500px;">
             No results found.
@@ -136,7 +136,8 @@
             dropdown.querySelectorAll('div').forEach(item => {
                 item.addEventListener('click', e => {
                     e.stopPropagation();
-                    const value = item.textContent;
+                    const id = item.dataset.id
+                    const value = {id: id, text: item.textContent};
                     if (selected.has(value)) {
                         selected.delete(value);
                     } else {
@@ -158,7 +159,7 @@
                         // Tag for UI
                         const tag = document.createElement('span');
                         tag.className = 'tag';
-                        tag.textContent = val;
+                        tag.textContent = val.text;
 
                         const remove = document.createElement('span');
                         remove.className = 'remove';
@@ -175,7 +176,7 @@
                         const input = document.createElement('input');
                         input.type = 'hidden';
                         input.name = paramName;
-                        input.value = val;
+                        input.value = val.id;
                         form.appendChild(input);
                     });
                 }

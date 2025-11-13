@@ -11,18 +11,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class ExperimentalController {
     private final FWTokenService fwTokenService;
-    private final FWEventQueryService FWEventQueryService;
+    private final FWEventQueryService fwEventQueryService;
     private final FWObjectQueryService objectQueryService;
     private final FWProjectQueryService projectQueryService;
 
-    public ExperimentalController(FWTokenService fwTokenService, FWEventQueryService FWEventQueryService, FWObjectQueryService objectQueryService, FWProjectQueryService projectQueryService) {
+    public ExperimentalController(FWTokenService fwTokenService, FWEventQueryService fwEventQueryService, FWObjectQueryService objectQueryService, FWProjectQueryService projectQueryService) {
         this.fwTokenService = fwTokenService;
-        this.FWEventQueryService = FWEventQueryService;
+        this.fwEventQueryService = fwEventQueryService;
         this.objectQueryService = objectQueryService;
         this.projectQueryService = projectQueryService;
     }
@@ -38,7 +37,7 @@ public class ExperimentalController {
     }
     @GetMapping("/testquery")
     public String testQuery() {
-        List<FWObject> events = objectQueryService.retrieveAllRoomObjects();
+        List<FWObject> objects = objectQueryService.retrieveAllRoomObjects();
         List<FWProject> projects = projectQueryService.retrieveAllRoomObjects();
         //return "testquery: " + projects.stream().map(FWProject::name).collect(Collectors.joining(","));
         return "testquery: " + projects.size();
