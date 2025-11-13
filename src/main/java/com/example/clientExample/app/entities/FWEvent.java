@@ -3,6 +3,7 @@ package com.example.clientExample.app.entities;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 //todo: add customs object
@@ -17,7 +18,9 @@ public record FWEvent(String type,
                       @JsonDeserialize(using = SafeLocalDateTimeDeserializer.class)
                       LocalDateTime dateTimeInAsString,
                       @JsonDeserialize(using = SafeLocalDateTimeDeserializer.class)
-                      LocalDateTime dateTimeOutAsString) {
+                      LocalDateTime dateTimeOutAsString,
+                      String note,
+                      List<FWCustoms> customs) {
 
 
 

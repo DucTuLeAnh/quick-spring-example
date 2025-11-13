@@ -1,6 +1,7 @@
 package com.example.clientExample.app.controller;
 
 import com.example.clientExample.app.entities.FWEvent;
+import com.example.clientExample.app.entities.FWEventView;
 import com.example.clientExample.app.entities.FWObject;
 import com.example.clientExample.app.entities.FWProject;
 import com.example.clientExample.app.service.ExampleService;
@@ -79,8 +80,11 @@ public class PageController {
         }
 
 
-        List<FWEvent> events = fwEventQueryService.retrieveAllProjectEvents(startDate, endDate, oids, pids);
+        List<FWEventView> events = fwEventQueryService.retrieveProjectEventViews(startDate, endDate, oids, pids);
+        System.out.println("Size of the retrieved events: " + events.size());
         model.addAttribute("results", events);
+        model.addAttribute("selectedPids", pids);
+        model.addAttribute("selectedOids", oids);
 
         return "searchpage";
     }

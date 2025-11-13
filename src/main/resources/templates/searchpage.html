@@ -56,6 +56,10 @@
             background-color: #e9ecef;
         }
 
+        .multi-select-wrapper{
+          margin: 20px;
+        }
+
         .result-container{
           width: 100%;
         }
@@ -83,14 +87,20 @@
             <div class="multi-select-wrapper" data-description="Projekte" data-name="pids">
                 <div class="multi-select"></div>
                 <div class="multi-select-dropdown">
-                    <div th:each="project : ${allProjects}" th:attr="data-id=${project.projectID}" th:text="${project.name}"></div>
+                    <div th:each="project : ${allProjects}"
+                         th:attr="data-id=${project.projectID}"
+                         th:text="${project.name}"
+                         th:data-selected="${selectedPids.contains(project.projectID)} ? true : false"></div>
                 </div>
             </div>
 
-            <div class="multi-select-wrapper"  data-description="Produktionsflächen" data-name="oids">
+            <div class="multi-select-wrapper" data-description="Produktionsflächen" data-name="oids">
                 <div class="multi-select"></div>
                 <div class="multi-select-dropdown">
-                    <div th:each="object : ${allObjects}" th:attr="data-id=${object.objectID}" th:text="${object.name}"></div>
+                    <div th:each="object : ${allObjects}"
+                         th:attr="data-id=${object.objectID}"
+                         th:text="${object.name}"
+                         th:data-selected="${selectedOids.contains(object.objectID)} ? true : false"></div>
                 </div>
             </div>
 
@@ -110,10 +120,13 @@
                 <tr>
                     <th style="width: 15%;">Startzeit</th>
                     <th style="width: 15%;">Endzeit</th>
-                    <th style="width: 20%;">Buchungstitel</th>
-                    <th style="width: 15%;">Projektname</th>
-                    <th style="width: 15%;">Bindername</th>
-                    <th style="width: 20%;">Objektname</th>
+                    <th style="width: 10%;">Buchungstitel</th>
+                    <th style="width: 10%;">Projektname</th>
+                    <th style="width: 10%;">Bindername</th>
+                    <th style="width: 5%;">Objektname</th>
+                    <th style="width: 5%;">Moderation</th>
+                    <th style="width: 5%;">Art</th>
+                    <th style="width: 5%;">Notiz</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -124,25 +137,19 @@
                     <td th:text="${item.projectName}"></td>
                     <td th:text="${item.projectBinderName}"></td>
                     <td th:text="${item.objectName}"></td>
+                    <td th:text="${item.customModerator}"></td>
+                    <td th:text="${item.customArt}"></td>
+                    <td th:text="${item.note}"></td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
         <div th:if="${results.isEmpty()}" class="alert alert-info text-center mt-3">
-            No results found.
-        </div>
+        No results found.
     </div>
+</div>
 
-        <div th:if="${results.isEmpty()}" class="alert alert-info text-center" style="width: 100%; max-width: 500px;">
-            No results found.
-        </div>
-    </div>
-
-        <div th:if="${results.isEmpty()}" class="alert alert-info text-center mt-3">
-            No results found.
-        </div>
-    </div>
 
 </div>
 
@@ -234,6 +241,10 @@
 
             // Click on dropdown item
             dropdown.querySelectorAll('div').forEach(item => {
+                if (item.dataset.selected === 'true') {
+                  selected.add({id: item.dataset.id, text: item.textContent});
+                }
+
                 item.addEventListener('click', e => {
                     e.stopPropagation();
                     const val = {id: item.dataset.id, text: item.textContent};
