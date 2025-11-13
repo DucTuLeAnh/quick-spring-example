@@ -32,7 +32,7 @@ public class FWObjectQueryService {
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
                         .host(config.getFwHost())
-                        .port(25000)
+                        .port(config.getFwPort())
                         .path("/api/v1/object")
                         .queryParam("getOthers", 1)
                         .build())

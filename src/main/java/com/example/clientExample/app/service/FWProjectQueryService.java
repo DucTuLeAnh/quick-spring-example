@@ -32,7 +32,7 @@ public class FWProjectQueryService {
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
                         .host(config.getFwHost())
-                        .port(25000)
+                        .port(config.getFwPort())
                         .path("/api/v1/project")
                         .queryParam("cursor", cursor)
                         .build())

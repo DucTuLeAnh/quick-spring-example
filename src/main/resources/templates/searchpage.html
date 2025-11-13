@@ -76,15 +76,15 @@
             </div>
 
 
-            <div class="multi-select-wrapper" data-name="pids">
-                <div class="multi-select">Select tags...</div>
+            <div class="multi-select-wrapper" data-description="Projekte" data-name="pids">
+                <div class="multi-select"></div>
                 <div class="multi-select-dropdown">
                     <div th:each="project : ${allProjects}" th:attr="data-id=${project.projectID}" th:text="${project.name}"></div>
                 </div>
             </div>
 
-            <div class="multi-select-wrapper" data-name="oids">
-                <div class="multi-select">Select status...</div>
+            <div class="multi-select-wrapper"  data-description="Produktionsflächen" data-name="oids">
+                <div class="multi-select"></div>
                 <div class="multi-select-dropdown">
                     <div th:each="object : ${allObjects}" th:attr="data-id=${object.objectID}" th:text="${object.name}"></div>
                 </div>
@@ -117,46 +117,35 @@
         const form = document.getElementById('searchForm');
         if (!form) return;
 
-        // Loop through all multi-select wrappers
         document.querySelectorAll('.multi-select-wrapper').forEach(wrapper => {
             const selectBox = wrapper.querySelector('.multi-select');
             const dropdown = wrapper.querySelector('.multi-select-dropdown');
             const paramName = wrapper.dataset.name;
+            const description = wrapper.dataset.description;
             const selected = new Set();
 
             if (!selectBox || !dropdown || !paramName) return;
 
-            // Toggle dropdown on click
-            selectBox.addEventListener('click', e => {
-                e.stopPropagation();
-                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-            });
+            // Make the selectBox editable with input
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = `Wählen Sie ein oder mehrere ${description} aus...`;
+            input.style.border = 'none';
+            input.style.outline = 'none';
+            input.style.flex = '1';
+            input.style.minWidth = '60px';
+            input.style.backgroundColor = 'transparent';
+            selectBox.innerHTML = ''; // Clear default text
+            selectBox.appendChild(input);
 
-            // Select/deselect items
-            dropdown.querySelectorAll('div').forEach(item => {
-                item.addEventListener('click', e => {
-                    e.stopPropagation();
-                    const id = item.dataset.id
-                    const value = {id: id, text: item.textContent};
-                    if (selected.has(value)) {
-                        selected.delete(value);
-                    } else {
-                        selected.add(value);
-                    }
-                    renderTags();
-                });
-            });
-
-            // Render tags + hidden inputs
+            // Function to render tags
             function renderTags() {
                 selectBox.innerHTML = '';
-                form.querySelectorAll(`input[name="${paramName}"]`).forEach(i => i.remove());
-
                 if (selected.size === 0) {
-                    selectBox.textContent = `Select ${paramName}...`;
+                    input.value = '';
+                    input.placeholder = `Wählen Sie ein oder mehrere ${description} aus...`;
                 } else {
                     selected.forEach(val => {
-                        // Tag for UI
                         const tag = document.createElement('span');
                         tag.className = 'tag';
                         tag.textContent = val.text;
@@ -171,21 +160,62 @@
                         };
                         tag.appendChild(remove);
                         selectBox.appendChild(tag);
-
-                        // Hidden input for form submission
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = paramName;
-                        input.value = val.id;
-                        form.appendChild(input);
                     });
                 }
-            }
-        });
+                selectBox.appendChild(input);
 
-        // Close all dropdowns when clicking outside
-        document.addEventListener('click', () => {
-            document.querySelectorAll('.multi-select-dropdown').forEach(dd => dd.style.display = 'none');
+                // Hidden inputs for form submission
+                form.querySelectorAll(`input[name="${paramName}"]`).forEach(i => i.remove());
+                selected.forEach(val => {
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = paramName;
+                    hidden.value = val.id;
+                    form.appendChild(hidden);
+                });
+            }
+
+            // Toggle dropdown
+            selectBox.addEventListener('click', e => {
+                e.stopPropagation();
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                input.focus();
+            });
+
+            // Filter dropdown based on input
+            input.addEventListener('input', () => {
+                const filter = input.value.toLowerCase();
+                let anyVisible = false;
+                dropdown.querySelectorAll('div').forEach(item => {
+                    if (item.textContent.toLowerCase().includes(filter)) {
+                        item.style.display = 'block';
+                        anyVisible = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                dropdown.style.display = anyVisible ? 'block' : 'none';
+            });
+
+            // Click on dropdown item
+            dropdown.querySelectorAll('div').forEach(item => {
+                item.addEventListener('click', e => {
+                    e.stopPropagation();
+                    const val = {id: item.dataset.id, text: item.textContent};
+                    selected.add(val);
+                    renderTags();
+                    input.value = '';
+                    input.focus();
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', () => {
+                dropdown.style.display = 'none';
+            });
+
+            // Initial render
+            renderTags();
         });
     });
 </script>

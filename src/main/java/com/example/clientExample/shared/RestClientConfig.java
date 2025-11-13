@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -18,13 +19,40 @@ public class RestClientConfig {
 
 
     @Bean
-    @Profile("!test")
+    @Profile("test")
     public RestClient restClient(RestClient.Builder restClientBuilder) throws Exception {
+        return restClientBuilder.requestInterceptor((request, body, execution) -> {
+            long start = System.currentTimeMillis();
+            try {
+                System.out.printf("➡️ Sending %s %s%n", request.getMethod(), request.getURI());
+                // Log request headers
+                request.getHeaders().forEach((key, values) ->
+                        System.out.printf("   %s: %s%n", key, String.join(", ", values))
+                );
+
+                var response = execution.execute(request, body);
+                long duration = System.currentTimeMillis() - start;
+                System.out.printf("✅ Response: %d (%d ms)%n", response.getStatusCode().value(), duration);
+                return response;
+            } catch (Exception e) {
+                long duration = System.currentTimeMillis() - start;
+                System.out.printf("❌ Exception after %d ms: %s%n", duration, e.toString());
+                e.printStackTrace();
+                throw e;
+            }
+        }).build();
+    }
+
+
+    @Bean
+    @Profile("asd")
+    public RestClient test(RestClient.Builder restClientBuilder) throws Exception {
         return restClientBuilder.build();
     }
 
+
     @Bean
-    @Profile("test")
+    @Profile("bob")
     public RestClient unsecureRestClient(RestClient.Builder restClientBuilder) throws Exception {
         // Trust all certificates
         TrustManager[] trustAllCerts = new TrustManager[]{
@@ -58,8 +86,21 @@ public class RestClientConfig {
 
         return restClientBuilder
                 .requestFactory(factory)
-                .requestInterceptor(
-                        (request, body, execution) -> execution.execute(request, body))
+                .requestInterceptor((request, body, execution) -> {
+                    long start = System.currentTimeMillis();
+                    try {
+                        System.out.printf("➡️ Sending %s %s%n", request.getMethod(), request.getURI());
+                        var response = execution.execute(request, body);
+                        long duration = System.currentTimeMillis() - start;
+                        System.out.printf("✅ Response: %d (%d ms)%n", response.getStatusCode().value(), duration);
+                        return response;
+                    } catch (Exception e) {
+                        long duration = System.currentTimeMillis() - start;
+                        System.out.printf("❌ Exception after %d ms: %s%n", duration, e.toString());
+                        e.printStackTrace();
+                        throw e;
+                    }
+                })
                 .build();
     }
 }
