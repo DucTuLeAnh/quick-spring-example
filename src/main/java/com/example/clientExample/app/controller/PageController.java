@@ -79,7 +79,7 @@ public class PageController {
         }
 
 
-        List<FWEvent> events = fwEventQueryService.retrieveAllEventsByDate(startDate, endDate, oids, pids);
+        List<FWEvent> events = fwEventQueryService.retrieveAllProjectEvents(startDate, endDate, oids, pids);
         model.addAttribute("results", events);
 
         return "searchpage";

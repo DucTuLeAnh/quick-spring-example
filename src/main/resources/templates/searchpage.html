@@ -55,6 +55,10 @@
         .multi-select-dropdown div:hover {
             background-color: #e9ecef;
         }
+
+        .result-container{
+          width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -99,12 +103,43 @@
         </form>
     </div>
 
-    <!-- Results -->
-    <div th:if="${results != null}" class="w-100 d-flex justify-content-center flex-column align-items-center">
-        <ul class="list-group mb-3" style="min-width: 300px; max-width: 500px; width: 100%;">
-            <li class="list-group-item" th:each="item : ${results}" th:text="${item.mainHeader}"></li>
-        </ul>
+    <div th:if="${results != null}" class="container-fluid py-3">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle w-100">
+                <thead class="table-light">
+                <tr>
+                    <th style="width: 15%;">Startzeit</th>
+                    <th style="width: 15%;">Endzeit</th>
+                    <th style="width: 20%;">Buchungstitel</th>
+                    <th style="width: 15%;">Projektname</th>
+                    <th style="width: 15%;">Bindername</th>
+                    <th style="width: 20%;">Objektname</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${results}">
+                    <td th:text="${item.dateTimeInAsString}"></td>
+                    <td th:text="${item.dateTimeOutAsString}"></td>
+                    <td th:text="${item.mainHeader}"></td>
+                    <td th:text="${item.projectName}"></td>
+                    <td th:text="${item.projectBinderName}"></td>
+                    <td th:text="${item.objectName}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:if="${results.isEmpty()}" class="alert alert-info text-center mt-3">
+            No results found.
+        </div>
+    </div>
+
         <div th:if="${results.isEmpty()}" class="alert alert-info text-center" style="width: 100%; max-width: 500px;">
+            No results found.
+        </div>
+    </div>
+
+        <div th:if="${results.isEmpty()}" class="alert alert-info text-center mt-3">
             No results found.
         </div>
     </div>
