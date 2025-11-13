@@ -1,6 +1,6 @@
 package com.example.clientExample.app.service;
 
-import com.example.clientExample.app.entities.Event;
+import com.example.clientExample.app.entities.FWEvent;
 import com.example.clientExample.app.entities.EventResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -11,17 +11,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class EventQueryService {
+public class FWEventQueryService {
     private RestClient restClient;
-    private final FwTokenService fwTokenService;
+    private final FWTokenService fwTokenService;
 
-    public EventQueryService(RestClient restClient, FwTokenService fwTokenService) {
+    public FWEventQueryService(RestClient restClient, FWTokenService fwTokenService) {
         this.restClient = restClient;
         this.fwTokenService = fwTokenService;
     }
 
 
-    public List<Event> retrieveAllEventsByDate(String from, String to){
+    public List<FWEvent> retrieveAllEventsByDate(String from, String to){
         EventResponse response = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
@@ -36,6 +36,6 @@ public class EventQueryService {
                 .retrieve()
                 .body(EventResponse.class);
 
-        return Optional.ofNullable(response).map(EventResponse::events).orElse(List.of());
+        return Optional.ofNullable(response).map(EventResponse::FWEvents).orElse(List.of());
     }
 }

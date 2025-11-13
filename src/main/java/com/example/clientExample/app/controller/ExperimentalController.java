@@ -1,10 +1,11 @@
 package com.example.clientExample.app.controller;
 
-import com.example.clientExample.app.entities.Event;
 import com.example.clientExample.app.entities.FWObject;
-import com.example.clientExample.app.service.EventQueryService;
+import com.example.clientExample.app.entities.FWProject;
+import com.example.clientExample.app.service.FWEventQueryService;
 import com.example.clientExample.app.service.FWObjectQueryService;
-import com.example.clientExample.app.service.FwTokenService;
+import com.example.clientExample.app.service.FWProjectQueryService;
+import com.example.clientExample.app.service.FWTokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,14 +15,16 @@ import java.util.stream.Collectors;
 
 @RestController
 public class ExperimentalController {
-    private final FwTokenService fwTokenService;
-    private final EventQueryService eventQueryService;
+    private final FWTokenService fwTokenService;
+    private final FWEventQueryService FWEventQueryService;
     private final FWObjectQueryService objectQueryService;
+    private final FWProjectQueryService projectQueryService;
 
-    public ExperimentalController(FwTokenService fwTokenService, EventQueryService eventQueryService, FWObjectQueryService objectQueryService) {
+    public ExperimentalController(FWTokenService fwTokenService, FWEventQueryService FWEventQueryService, FWObjectQueryService objectQueryService, FWProjectQueryService projectQueryService) {
         this.fwTokenService = fwTokenService;
-        this.eventQueryService = eventQueryService;
+        this.FWEventQueryService = FWEventQueryService;
         this.objectQueryService = objectQueryService;
+        this.projectQueryService = projectQueryService;
     }
 
     @GetMapping("/token")
@@ -36,6 +39,8 @@ public class ExperimentalController {
     @GetMapping("/testquery")
     public String testQuery() {
         List<FWObject> events = objectQueryService.retrieveAllRoomObjects();
-        return "testquery: " + events.stream().map(FWObject::name).collect(Collectors.joining(","));
+        List<FWProject> projects = projectQueryService.retrieveAllRoomObjects();
+        //return "testquery: " + projects.stream().map(FWProject::name).collect(Collectors.joining(","));
+        return "testquery: " + projects.size();
     }
 }

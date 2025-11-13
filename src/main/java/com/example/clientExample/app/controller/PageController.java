@@ -1,6 +1,11 @@
 package com.example.clientExample.app.controller;
 
+import com.example.clientExample.app.entities.FWObject;
+import com.example.clientExample.app.entities.FWProject;
 import com.example.clientExample.app.service.ExampleService;
+import com.example.clientExample.app.service.FWEventQueryService;
+import com.example.clientExample.app.service.FWObjectQueryService;
+import com.example.clientExample.app.service.FWProjectQueryService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,9 +20,16 @@ import java.util.List;
 public class PageController {
 
     private final ExampleService exampleService;
+    private final FWEventQueryService FWEventQueryService;
+    private final FWObjectQueryService objectQueryService;
+    private final FWProjectQueryService projectQueryService;
 
-    public PageController(ExampleService service) {
+
+    public PageController(ExampleService service, FWEventQueryService fwEventQueryService, FWObjectQueryService objectQueryService, FWProjectQueryService projectQueryService) {
         this.exampleService = service;
+        FWEventQueryService = fwEventQueryService;
+        this.objectQueryService = objectQueryService;
+        this.projectQueryService = projectQueryService;
     }
 
     @GetMapping("/start")
@@ -40,9 +52,12 @@ public class PageController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             Model model
     ) {
+        List<FWObject> objects = objectQueryService.retrieveAllRoomObjects();
+        List<FWProject> projects = projectQueryService.retrieveAllRoomObjects();
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
-
+        model.addAttribute("allCategories", objects.stream().map(FWObject::name));
+        model.addAttribute("allStatuses", projects.stream().map(FWProject::name));
         if (startDate != null && endDate != null) {
             // Dummy data example – replace with your actual query logic
             List<String> results = new LinkedList<>(

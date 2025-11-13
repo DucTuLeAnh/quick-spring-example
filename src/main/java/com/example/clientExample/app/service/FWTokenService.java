@@ -11,14 +11,14 @@ import java.util.Optional;
 
 @Service
 @Scope("application")
-public class FwTokenService {
+public class FWTokenService {
 
 
     private final RestClient restClient;
     private final FWAccessConfiguration fwAccessConfiguration;
     private final String AUTH_PATH = "auth/token";
 
-    public FwTokenService(RestClient restClient, FWAccessConfiguration fwAccessConfiguration) {
+    public FWTokenService(RestClient restClient, FWAccessConfiguration fwAccessConfiguration) {
         this.restClient = restClient;
         this.fwAccessConfiguration = fwAccessConfiguration;
     }
