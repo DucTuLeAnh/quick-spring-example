@@ -1,4 +1,4 @@
-package com.example.clientExample.app.entities;
+package com.example.clientExample.shared;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

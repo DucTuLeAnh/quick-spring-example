@@ -1,9 +1,4 @@
-package com.example.clientExample.app.entities;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import java.time.LocalDateTime;
-import java.util.List;
+package com.example.clientExample.app.entities.view;
 
 public record FWEventView(
                           String mainHeader,

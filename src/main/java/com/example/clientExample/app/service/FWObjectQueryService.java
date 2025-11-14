@@ -1,8 +1,8 @@
 package com.example.clientExample.app.service;
 
 
-import com.example.clientExample.app.entities.FWObject;
-import com.example.clientExample.app.entities.FWObjectResponse;
+import com.example.clientExample.app.entities.rest.FWObject;
+import com.example.clientExample.app.entities.rest.FWObjectResponse;
 import com.example.clientExample.shared.FWAccessConfiguration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

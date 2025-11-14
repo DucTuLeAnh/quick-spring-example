@@ -1,12 +1,13 @@
 package com.example.clientExample.app.service;
 
-import com.example.clientExample.app.entities.TokenActiveResponse;
+import com.example.clientExample.app.entities.rest.TokenActiveResponse;
 import com.example.clientExample.shared.FWAccessConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+
 import java.util.Optional;
 
 @Service
@@ -65,6 +66,8 @@ public class FWTokenService {
         System.out.println("This is the response: " + response);
         //todo: dont return empty string rather throw exception
         return Optional.ofNullable(response).map(TokenResponse::accessToken).orElse("");
+
+
     }
 
 

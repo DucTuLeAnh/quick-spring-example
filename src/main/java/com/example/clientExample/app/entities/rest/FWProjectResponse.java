@@ -1,4 +1,4 @@
-package com.example.clientExample.app.entities;
+package com.example.clientExample.app.entities.rest;
 
 import java.util.List;
 

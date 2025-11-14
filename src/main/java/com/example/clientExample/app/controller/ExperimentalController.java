@@ -1,7 +1,7 @@
 package com.example.clientExample.app.controller;
 
-import com.example.clientExample.app.entities.FWObject;
-import com.example.clientExample.app.entities.FWProject;
+import com.example.clientExample.app.entities.rest.FWObject;
+import com.example.clientExample.app.entities.rest.FWProject;
 import com.example.clientExample.app.service.FWEventQueryService;
 import com.example.clientExample.app.service.FWObjectQueryService;
 import com.example.clientExample.app.service.FWProjectQueryService;

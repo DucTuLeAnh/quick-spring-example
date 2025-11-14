@@ -1,9 +1,9 @@
 package com.example.clientExample.app.service;
 
-import com.example.clientExample.app.entities.FWCustoms;
-import com.example.clientExample.app.entities.FWEvent;
-import com.example.clientExample.app.entities.FWEventResponse;
-import com.example.clientExample.app.entities.FWEventView;
+import com.example.clientExample.app.entities.rest.FWCustoms;
+import com.example.clientExample.app.entities.rest.FWEvent;
+import com.example.clientExample.app.entities.rest.FWEventResponse;
+import com.example.clientExample.app.entities.view.FWEventView;
 import com.example.clientExample.shared.FWAccessConfiguration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
