@@ -120,26 +120,23 @@
                 <tr>
                     <th style="width: 15%;">Startzeit</th>
                     <th style="width: 15%;">Endzeit</th>
-                    <th style="width: 10%;">Buchungstitel</th>
-                    <th style="width: 10%;">Projektname</th>
-                    <th style="width: 10%;">Bindername</th>
-                    <th style="width: 5%;">Objektname</th>
-                    <th style="width: 5%;">Moderation</th>
-                    <th style="width: 5%;">Art</th>
-                    <th style="width: 5%;">Notiz</th>
+                    <th style="width: 25%;">Buchungstitel</th>
+                    <th style="width: 15%;">Objekte</th>
+                    <th style="width: 10%;">Moderatoren</th>
+                    <th style="width: 10%;">Arten</th>
+                    <th style="width: 10%;">Notizen</th>
+
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="item : ${results}">
                     <td th:text="${item.dateTimeInAsString}"></td>
                     <td th:text="${item.dateTimeOutAsString}"></td>
-                    <td th:text="${item.mainHeader}"></td>
-                    <td th:text="${item.projectName}"></td>
-                    <td th:text="${item.projectBinderName}"></td>
-                    <td th:text="${item.objectName}"></td>
-                    <td th:text="${item.customModerator}"></td>
-                    <td th:text="${item.customArt}"></td>
-                    <td th:text="${item.note}"></td>
+                    <td th:text="${item.entryHeader}"></td>
+                    <td th:text="${#strings.listJoin(item.objectNames, ', ')}"></td>
+                    <td th:text="${#strings.listJoin(item.customModerators, ', ')}"></td>
+                    <td th:text="${#strings.listJoin(item.customArts, ', ')}"></td>
+                    <td th:text="${#strings.listJoin(item.notes, ', ')}"></td>
                 </tr>
                 </tbody>
             </table>

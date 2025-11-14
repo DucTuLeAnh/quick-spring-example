@@ -4,6 +4,8 @@ import com.example.clientExample.app.entities.rest.FWCustoms;
 import com.example.clientExample.app.entities.rest.FWEvent;
 import com.example.clientExample.app.entities.rest.FWEventResponse;
 import com.example.clientExample.app.entities.view.FWEventView;
+import com.example.clientExample.app.entities.view.FWSearchResultEntryKey;
+import com.example.clientExample.app.entities.view.FWSearchResultEntryView;
 import com.example.clientExample.shared.FWAccessConfiguration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class FWEventQueryService {
@@ -115,5 +118,63 @@ public class FWEventQueryService {
                             art);
                 }).toList();
 
+    }
+
+
+    public List<FWSearchResultEntryView> retrieveSearchResultEntryView(LocalDate from, LocalDate to, List<String> objectIds, List<String> projectIds) {
+        List<FWEvent> events = this.retrieveAllProjectEvents(from, to, objectIds, projectIds);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd   HH:mm");
+
+        Map<FWSearchResultEntryKey, List<FWEvent>> grouped =
+                events.stream()
+                        .collect(Collectors.groupingBy(
+                                p -> new FWSearchResultEntryKey(p.projectID(), p.bookingNumber(), p.projectBinderID())
+                        ));
+
+
+        List<FWSearchResultEntryView> searchResultEntryViews = new ArrayList<>();
+
+        for (Map.Entry<FWSearchResultEntryKey, List<FWEvent>> entry : grouped.entrySet()) {
+
+            FWSearchResultEntryKey key = entry.getKey();
+
+            List<FWEvent> allFwEvents = entry.getValue();
+
+            String entryHeader = allFwEvents.stream()
+                    .findAny()
+                    .map(groupedEvent -> groupedEvent.projectName() + " || " + groupedEvent.projectName() + " || " + groupedEvent.mainHeader())
+                    .orElse("");
+
+            List<String> objectNames = allFwEvents.stream().map(FWEvent::objectName).filter(s -> !s.isBlank()).toList();
+
+            LocalDateTime sortTime = allFwEvents.stream()
+                    .findAny()
+                    .map(FWEvent::dateTimeInAsString)
+                    .orElseThrow(() -> new IllegalStateException("The date time in must not be null!"));
+
+            String dateTimeInAsString = allFwEvents.stream()
+                    .findAny()
+                    .map(FWEvent::dateTimeInAsString)
+                    .map(formatter::format)
+                    .orElseThrow(() -> new IllegalStateException("The date time in must not be null!"));
+
+            String dateTimeOutAsString = allFwEvents.stream()
+                    .findAny()
+                    .map(FWEvent::dateTimeOutAsString)
+                    .map(formatter::format)
+                    .orElseThrow(() -> new IllegalStateException("The date time out must not be null!"));
+
+            List<String> notes = allFwEvents.stream().map(FWEvent::note).filter(s -> !s.isBlank()).toList();
+
+            List<String> customModerators = allFwEvents.stream().map(FWEvent::note).filter(s -> !s.isBlank()).toList();
+
+            List<String> customArts = allFwEvents.stream().map(FWEvent::note).filter(s -> !s.isBlank()).toList();
+
+            searchResultEntryViews.add(new FWSearchResultEntryView(key, entryHeader, objectNames, dateTimeInAsString, dateTimeOutAsString, sortTime, notes, customModerators, customArts));
+        }
+
+        searchResultEntryViews.sort(Comparator.comparing(FWSearchResultEntryView::sortTime));
+
+        return searchResultEntryViews;
     }
 }

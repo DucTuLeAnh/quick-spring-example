@@ -10,6 +10,7 @@ import java.util.List;
 //todo: add customs object
 public record FWEvent(String type,
                       String eventID,
+                      String bookingNumber,
                       String mainHeader,
                       String objectID,
                       String objectName,

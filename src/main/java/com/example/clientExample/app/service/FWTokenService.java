@@ -14,7 +14,6 @@ import java.util.Optional;
 @Scope("application")
 public class FWTokenService {
 
-
     private final RestClient restClient;
     private final FWAccessConfiguration fwAccessConfiguration;
     private final String AUTH_PATH = "auth/token";
@@ -24,27 +23,7 @@ public class FWTokenService {
         this.fwAccessConfiguration = fwAccessConfiguration;
     }
 
-    public String testQuery() {
-
-        String dayFrom = "2025-11-01";
-        String dayTo = "2025-11-11";
-        return restClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
-                        .host(fwAccessConfiguration.getFwHost())
-                        .port(fwAccessConfiguration.getFwPort())
-                        .path("/api/v1/event")
-                        .queryParam("dayFrom", dayFrom)
-                        .queryParam("dayTo", dayTo)
-                        .build())
-                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.getAuthToken())
-                .retrieve()
-                .body(String.class);
-
-    }
-
-
+    //todo: extract to own files
     public record AuthCredentials(String appID, String userName, String key) {
     }
 
@@ -52,8 +31,7 @@ public class FWTokenService {
     }
 
     public String getAuthToken() {
-
-
+        /*
         TokenResponse response = restClient.post()
                 .uri(fwAccessConfiguration.getBaseApiUrl() + AUTH_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -66,13 +44,13 @@ public class FWTokenService {
         System.out.println("This is the response: " + response);
         //todo: dont return empty string rather throw exception
         return Optional.ofNullable(response).map(TokenResponse::accessToken).orElse("");
-
+*/
+        return "mydebugtokenwillbesethere";
 
     }
 
 
     public boolean isTokenValid(String token) {
-        //restClient.get()
         TokenActiveResponse response = restClient.get()
                 .uri(fwAccessConfiguration.getBaseApiUrl() + AUTH_PATH)
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
