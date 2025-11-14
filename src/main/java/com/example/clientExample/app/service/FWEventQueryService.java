@@ -54,40 +54,59 @@ public class FWEventQueryService {
     }
 
 
-    public List<FWEvent> retrieveAllProjectEvents(LocalDate from, LocalDate to, List<String> objectIds, List<String> projectIds) {
+    public List<FWEvent> retrieveAllProjectEventsAccordingToBroadcastTime(LocalDate from, LocalDate to, List<String> objectIds, List<String> projectIds) {
         if (from == null || to == null) {
             return Collections.emptyList();
         }
 
         String authToken = this.fwTokenService.getAuthToken();
-        Set<String> objectIdSet = new HashSet<>(objectIds);
-        Set<String> projectIdSet = new HashSet<>(projectIds);
-
-        LocalDateTime rangeStart = from.atTime(3, 0);
-        LocalDateTime rangeEnd = to.plusDays(1).atTime(2, 59, 59, 999_999_999);
-
         List<FWEvent> filteredEvents = new ArrayList<>();
         Integer currentCursor = 1;
 
         while (currentCursor != null && currentCursor != 0) {
+            // A broadcast day goes from 3:00 - 2:59, so we need to consider the next day as well
             FWEventResponse response = retrieveAllProjectEventsByCursor(authToken, from, to.plusDays(1), currentCursor);
-
-            // filter immediately, avoid storing unnecessary events
-            response.events().stream()
-                    .filter(e -> objectIdSet.isEmpty() || objectIdSet.contains(e.objectID()))
-                    .filter(e -> projectIdSet.isEmpty() || projectIdSet.contains(e.projectID()))
-                    .filter(e -> {
-                        LocalDateTime ts = e.dateTimeInAsString();
-                        return !ts.isBefore(rangeStart) && !ts.isAfter(rangeEnd);
-                    })
-                    .forEach(filteredEvents::add);
-
+            filteredEvents.addAll(this.filterByBroadcastTime(response.events(), from, to));
             currentCursor = response.nextCursor();
         }
 
         filteredEvents.sort(Comparator.comparing(FWEvent::dateTimeInAsString));
 
         return filteredEvents;
+    }
+
+    /**
+     * A broadcast day starts at 3 A.M and ends at 2:59 AM on the next day.
+     * So all events on a starting day before 3 A.M must be thrown out and all events on the nex day till 2:59 must be included.
+     *
+     */
+    private List<FWEvent> filterByBroadcastTime(List<FWEvent> allEvents, LocalDate from, LocalDate to) {
+        LocalDateTime rangeStart = from.atTime(3, 0);
+        LocalDateTime rangeEnd = to.plusDays(1).atTime(2, 59, 59, 999_999_999);
+        return allEvents.stream()
+                .filter(e -> {
+                    LocalDateTime ts = e.dateTimeInAsString();
+                    return !ts.isBefore(rangeStart) && !ts.isAfter(rangeEnd);
+                })
+                .toList();
+    }
+
+    private List<FWEvent> filterByObjectId(List<FWEvent> allEvents, List<String> objectIds) {
+        Set<String> objectIdSet = new HashSet<>(objectIds);
+        return allEvents.stream()
+                .filter(e ->
+                        objectIdSet.isEmpty() || objectIdSet.contains(e.objectID())
+                )
+                .toList();
+    }
+
+    private List<FWEvent> filterByProjectId(List<FWEvent> allEvents, List<String> projectIds) {
+        Set<String> projectIdSet = new HashSet<>(projectIds);
+        return allEvents.stream()
+                .filter(e ->
+                        projectIdSet.isEmpty() || projectIdSet.contains(e.objectID())
+                )
+                .toList();
     }
 
     private String getCustomValue(List<FWCustoms> customs, String label) {
@@ -99,10 +118,12 @@ public class FWEventQueryService {
     }
 
     public List<FWEventView> retrieveProjectEventViews(LocalDate from, LocalDate to, List<String> objectIds, List<String> projectIds) {
-        List<FWEvent> events = this.retrieveAllProjectEvents(from, to, objectIds, projectIds);
+        List<FWEvent> eventsByBroadcastTime = this.retrieveAllProjectEventsAccordingToBroadcastTime(from, to, objectIds, projectIds);
+
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd   HH:mm");
 
-        return events.stream()
+        return eventsByBroadcastTime.stream()
                 .map(ev -> {
                     String moderation = this.getCustomValue(ev.customs(), "Moderation");
                     String art = this.getCustomValue(ev.customs(), "Art");
@@ -122,16 +143,28 @@ public class FWEventQueryService {
 
 
     public List<FWSearchResultEntryView> retrieveSearchResultEntryView(LocalDate from, LocalDate to, List<String> objectIds, List<String> projectIds) {
-        List<FWEvent> events = this.retrieveAllProjectEvents(from, to, objectIds, projectIds);
+        List<FWEvent> eventsByBroadcastTime = this.retrieveAllProjectEventsAccordingToBroadcastTime(from, to, objectIds, projectIds);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd   HH:mm");
 
-        Map<FWSearchResultEntryKey, List<FWEvent>> grouped =
-                events.stream()
+        Map<FWSearchResultEntryKey, List<FWEvent>> groupedBySearchResultEntryKey =
+                eventsByBroadcastTime.stream()
                         .collect(Collectors.groupingBy(
                                 p -> new FWSearchResultEntryKey(p.projectID(), p.bookingNumber(), p.projectBinderID())
                         ));
 
+        List<FWSearchResultEntryView> views = this.mapToFWSearchResultEntryViews(groupedBySearchResultEntryKey, formatter);
 
+        Set<String> projectIdSet = new HashSet<>(projectIds);
+        return views.stream()
+                .filter(view ->
+                        (projectIdSet.isEmpty() || view.projectIds().stream().anyMatch(projectIdSet::contains))
+                        && (objectIds.isEmpty() || view.objectIds().containsAll(objectIds))
+                )
+                .toList();
+
+    }
+
+    private List<FWSearchResultEntryView> mapToFWSearchResultEntryViews(Map<FWSearchResultEntryKey, List<FWEvent>> grouped, DateTimeFormatter formatter) {
         List<FWSearchResultEntryView> searchResultEntryViews = new ArrayList<>();
 
         for (Map.Entry<FWSearchResultEntryKey, List<FWEvent>> entry : grouped.entrySet()) {
@@ -146,6 +179,8 @@ public class FWEventQueryService {
                     .orElse("");
 
             List<String> objectNames = allFwEvents.stream().map(FWEvent::objectName).filter(s -> !s.isBlank()).toList();
+            Set<String> objectIds = allFwEvents.stream().map(FWEvent::objectID).filter(s -> !s.isBlank()).collect(Collectors.toSet());
+            Set<String> projectIds = allFwEvents.stream().map(FWEvent::projectID).filter(s -> !s.isBlank()).collect(Collectors.toSet());
 
             LocalDateTime sortTime = allFwEvents.stream()
                     .findAny()
@@ -170,7 +205,7 @@ public class FWEventQueryService {
 
             List<String> customArts = allFwEvents.stream().map(FWEvent::note).filter(s -> !s.isBlank()).toList();
 
-            searchResultEntryViews.add(new FWSearchResultEntryView(key, entryHeader, objectNames, dateTimeInAsString, dateTimeOutAsString, sortTime, notes, customModerators, customArts));
+            searchResultEntryViews.add(new FWSearchResultEntryView(key, entryHeader, projectIds, objectIds, objectNames, dateTimeInAsString, dateTimeOutAsString, sortTime, notes, customModerators, customArts));
         }
 
         searchResultEntryViews.sort(Comparator.comparing(FWSearchResultEntryView::sortTime));
