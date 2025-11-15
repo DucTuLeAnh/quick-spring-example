@@ -1,0 +1,29 @@
+<th:block th:fragment="timelineEntry(entry)">
+    <div class="timeline-card">
+
+
+
+
+        <!-- First row: time + title -->
+        <div class="row">
+            <div class="col-3 timeline-title">
+                [[${entry.dateTimeInAsString}]] - [[${entry.dateTimeOutAsString}]]
+            </div>
+
+            <div class="col-5 timeline-title">
+                [[${entry.entryHeader}]]
+                <div th:if="${entry.customModerators != null and !#lists.isEmpty(entry.customModerators)}">
+                    Mod.: [[${#strings.listJoin(entry.customModerators, ', ')}]]
+                </div>
+            </div>
+
+            <div class="col-3 timeline-title">
+                [[${#strings.listJoin(entry.objectNames, ', ')}]]
+            </div>
+            <div class="col-1 timeline-title">
+                [[${#strings.listJoin(entry.customArts, ', ')}]]
+            </div>
+        </div>
+
+    </div>
+</th:block>

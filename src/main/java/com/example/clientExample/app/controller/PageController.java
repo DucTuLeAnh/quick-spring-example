@@ -88,4 +88,13 @@ public class PageController {
 
         return "searchpage";
     }
+
+    @GetMapping("/timeline")
+    public String timeline(Model model) {
+        LocalDate now = LocalDate.now();
+        List<FWSearchResultEntryView> entryViews = fwEventQueryService.retrieveSearchResultEntryView(now, now, Collections.emptyList(), Collections.emptyList());
+        model.addAttribute("entries", entryViews);
+
+        return "timeline";
+    }
 }

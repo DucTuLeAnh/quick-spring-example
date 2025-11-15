@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .timeline-container {
+            background-color: #4c6b90;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .timeline-card {
+            background-color: #f8f0c5;
+            border: 1px solid #d3c89f;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+        }
+
+        .timeline-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .timeline-meta {
+            font-size: 0.9rem;
+            color: #444;
+        }
+
+        .live-badge {
+            color: #b30000;
+            font-weight: bold;
+        }
+
+        .timeline-meta-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .meta-chip {
+            background-color: #e6dfba;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            border: 1px solid #d2cfa8;
+        }
+
+        .meta-chip.live {
+            color: #b30000;
+            font-weight: bold;
+            border-color: #b30000;
+        }
+
+        .meta-chip.az {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="timeline-container">
+
+    <h3 class="text-white mb-3">INFOTAFEL</h3>
+    <div th:each="entry : ${entries}">
+        <th:block th:replace="fragments/timelineEntry :: timelineEntry(${entry})"/>
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

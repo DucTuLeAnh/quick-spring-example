@@ -144,7 +144,7 @@ public class FWEventQueryService {
 
     public List<FWSearchResultEntryView> retrieveSearchResultEntryView(LocalDate from, LocalDate to, List<String> objectIds, List<String> projectIds) {
         List<FWEvent> eventsByBroadcastTime = this.retrieveAllProjectEventsAccordingToBroadcastTime(from, to, objectIds, projectIds);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd   HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
         Map<FWSearchResultEntryKey, List<FWEvent>> groupedBySearchResultEntryKey =
                 eventsByBroadcastTime.stream()

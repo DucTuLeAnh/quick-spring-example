@@ -45,7 +45,7 @@ public class FWTokenService {
         //todo: dont return empty string rather throw exception
         return Optional.ofNullable(response).map(TokenResponse::accessToken).orElse("");
 */
-        return "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb21wcmVzc2VkSnd0VG9rZW5JZCI6ImlkMjAyNTExMTQyMjE4MzcwMDAwMDEzNTc2IiwiaXNzIjoiUlRMIE5ld3MiLCJpYXQiOiIiLCJqd3RUb2tlbklkIjoiaWQyMDI1MTExNDIyMTgzNzAwMDAwMTM1NzcifQ.VtGdap0NDphDF14LnAoVbznzaKvCKPb9Y2Y5zauIZk8";
+        return "thats were i would add my secret token";
 
     }
 

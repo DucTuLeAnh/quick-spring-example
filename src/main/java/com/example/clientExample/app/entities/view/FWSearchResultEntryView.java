@@ -16,4 +16,5 @@ public record FWSearchResultEntryView(
         List<String> notes,
         List<String> customModerators,
         List<String> customArts) {
+
 }
