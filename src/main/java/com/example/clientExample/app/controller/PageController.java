@@ -18,6 +18,16 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
+
+/*
+
+
+ - layout nebeneinander
+ - start-date => end-date füllt sich automatisch
+ - deutsches datumsformat,
+ - deutsche texte
+
+ */
 @Controller
 public class PageController {
 
@@ -38,7 +48,7 @@ public class PageController {
     public String testo(Model model) {
         model.addAttribute("allCategories", List.of("Test1", "Test2", "Test3", "Test4", "Test5", "Test6", "Test7", "Test8", "Test9", "Test2", "Test1", "Test2"));
         model.addAttribute("allStatuses", List.of("Status1", "Status2"));
-        return "searchpage"; // refers to users.html
+        return "searchpage";
     }
 
     /*

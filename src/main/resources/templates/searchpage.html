@@ -11,6 +11,7 @@
             border-radius: 0.25rem;
             padding: 0.375rem 0.75rem;
             min-height: 38px;
+            min-width: 200px;
             width: 100%;
             display: flex;
             flex-wrap: wrap;
@@ -56,9 +57,6 @@
             background-color: #e9ecef;
         }
 
-        .multi-select-wrapper{
-          margin: 20px;
-        }
 
         .result-container{
           width: 100%;
@@ -69,46 +67,62 @@
 <div class="container py-5 d-flex flex-column align-items-center">
 
     <!-- Search Form -->
-    <div class="card p-4 mb-4" style="min-width: 300px; max-width: 500px; width: 100%;">
-        <h4 class="card-title text-center mb-3">Search</h4>
+    <div class="container-fluid py-4">
         <form id="searchForm" th:action="@{/search}" method="get">
-            <div class="mb-3">
-                <label for="startDate" class="form-label">Start Date</label>
-                <input type="date" class="form-control" id="startDate" name="startDate"
-                       th:value="${startDate}">
-            </div>
-            <div class="mb-3">
-                <label for="endDate" class="form-label">End Date</label>
-                <input type="date" class="form-control" id="endDate" name="endDate"
-                       th:value="${endDate}">
-            </div>
 
+            <div class="row g-4">
 
-            <div class="multi-select-wrapper" data-description="Projekte" data-name="pids">
-                <div class="multi-select"></div>
-                <div class="multi-select-dropdown">
-                    <div th:each="project : ${allProjects}"
-                         th:attr="data-id=${project.projectID}"
-                         th:text="${project.name}"
-                         th:data-selected="${selectedPids.contains(project.projectID)} ? true : false"></div>
+                <!-- Start Date -->
+                <div class="col-md-3">
+                    <label for="startDate" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="startDate" name="startDate"
+                           th:value="${startDate}">
                 </div>
-            </div>
 
-            <div class="multi-select-wrapper" data-description="Produktionsflächen" data-name="oids">
-                <div class="multi-select"></div>
-                <div class="multi-select-dropdown">
-                    <div th:each="object : ${allObjects}"
-                         th:attr="data-id=${object.objectID}"
-                         th:text="${object.name}"
-                         th:data-selected="${selectedOids.contains(object.objectID)} ? true : false"></div>
+                <!-- End Date -->
+                <div class="col-md-3">
+                    <label for="endDate" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="endDate" name="endDate"
+                           th:value="${endDate}">
                 </div>
+
+                <!-- Projekte -->
+                <div class="col-md-3">
+                    <label class="form-label">Projekte</label>
+                    <div class="multi-select-wrapper" data-description="Projekte" data-name="pids"
+                         style="position: relative;">
+                        <div class="multi-select"></div>
+                        <div class="multi-select-dropdown">
+                            <div th:each="project : ${allProjects}"
+                                 th:attr="data-id=${project.projectID}"
+                                 th:text="${project.name}"
+                                 th:data-selected="${selectedPids.contains(project.projectID)} ? true : false">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Produktionsflächen -->
+                <div class="col-md-3">
+                    <label class="form-label">Produktionsflächen</label>
+                    <div class="multi-select-wrapper" data-description="Produktionsflächen" data-name="oids"
+                         style="position: relative;">
+                        <div class="multi-select"></div>
+                        <div class="multi-select-dropdown">
+                            <div th:each="object : ${allObjects}"
+                                 th:attr="data-id=${object.objectID}"
+                                 th:text="${object.name}"
+                                 th:data-selected="${selectedOids.contains(object.objectID)} ? true : false">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-
-            <div class="text-center">
+            <div class="text-center mt-4">
                 <button type="submit" class="btn btn-primary">Search</button>
             </div>
-
 
         </form>
     </div>
