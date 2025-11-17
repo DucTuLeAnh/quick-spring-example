@@ -40,7 +40,7 @@ public class FWProjectQueryService {
         return Optional.ofNullable(response).orElseThrow(() -> new IllegalStateException("Null object received in FW Project Query Service."));
     }
 
-    public List<FWProject> retrieveAllRoomObjects(){
+    public List<FWProject> retrieveAllProjects(){
 
         List<FWProject> allProjects = new ArrayList<>();
 

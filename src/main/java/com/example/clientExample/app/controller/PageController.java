@@ -1,6 +1,5 @@
 package com.example.clientExample.app.controller;
 
-import com.example.clientExample.app.entities.view.FWEventView;
 import com.example.clientExample.app.entities.rest.FWObject;
 import com.example.clientExample.app.entities.rest.FWProject;
 import com.example.clientExample.app.entities.view.FWSearchResultEntryView;
@@ -71,11 +70,11 @@ public class PageController {
         System.out.println(endDate);
         System.out.println(oids);
         System.out.println(pids);
-        List<FWObject> objects = objectQueryService.retrieveAllRoomObjects();
-        List<FWProject> projects = projectQueryService.retrieveAllRoomObjects();
+        List<FWObject> allRoomObjects = objectQueryService.retrieveAllRoomObjects();
+        List<FWProject> projects = projectQueryService.retrieveAllProjects();
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
-        model.addAttribute("allObjects", objects);
+        model.addAttribute("allObjects", allRoomObjects);
         model.addAttribute("allProjects", projects);
 
 
@@ -90,7 +89,7 @@ public class PageController {
         }
 
 
-        List<FWSearchResultEntryView> entryViews = fwEventQueryService.retrieveSearchResultEntryView(startDate, endDate, oids, pids);
+        List<FWSearchResultEntryView> entryViews = fwEventQueryService.retrieveSearchResultEntryView(startDate, endDate, oids, pids, allRoomObjects);
         System.out.println("Size of the retrieved events: " + entryViews.size());
         model.addAttribute("results", entryViews);
         model.addAttribute("selectedPids", pids);
@@ -102,7 +101,8 @@ public class PageController {
     @GetMapping("/timeline")
     public String timeline(Model model) {
         LocalDate now = LocalDate.now();
-        List<FWSearchResultEntryView> entryViews = fwEventQueryService.retrieveSearchResultEntryView(now, now, Collections.emptyList(), Collections.emptyList());
+        List<FWObject> allRoomObjects = objectQueryService.retrieveAllRoomObjects();
+        List<FWSearchResultEntryView> entryViews = fwEventQueryService.retrieveSearchResultEntryView(now, now, Collections.emptyList(), Collections.emptyList(), allRoomObjects);
         model.addAttribute("entries", entryViews);
 
         return "timeline";

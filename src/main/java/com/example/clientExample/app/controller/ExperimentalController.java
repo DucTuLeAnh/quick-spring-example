@@ -38,7 +38,7 @@ public class ExperimentalController {
     @GetMapping("/testquery")
     public String testQuery() {
         List<FWObject> objects = objectQueryService.retrieveAllRoomObjects();
-        List<FWProject> projects = projectQueryService.retrieveAllRoomObjects();
+        List<FWProject> projects = projectQueryService.retrieveAllProjects();
         //return "testquery: " + projects.stream().map(FWProject::name).collect(Collectors.joining(","));
         return "testquery: " + projects.size();
     }
