@@ -1,7 +1,7 @@
-package com.example.clientExample.app.service;
+package com.example.clientExample.shared;
 
 import com.example.clientExample.app.entities.rest.TokenActiveResponse;
-import com.example.clientExample.shared.FWAccessConfiguration;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -12,13 +12,13 @@ import java.util.Optional;
 
 @Service
 @Scope("application")
-public class FWTokenService {
+public class TokenService {
 
     private final RestClient restClient;
     private final FWAccessConfiguration fwAccessConfiguration;
     private final String AUTH_PATH = "auth/token";
 
-    public FWTokenService(RestClient restClient, FWAccessConfiguration fwAccessConfiguration) {
+    public TokenService(@Qualifier("tokenClient") RestClient restClient, FWAccessConfiguration fwAccessConfiguration) {
         this.restClient = restClient;
         this.fwAccessConfiguration = fwAccessConfiguration;
     }
@@ -31,7 +31,7 @@ public class FWTokenService {
     }
 
     public String getAuthToken() {
-        /*
+
         TokenResponse response = restClient.post()
                 .uri(fwAccessConfiguration.getBaseApiUrl() + AUTH_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -43,10 +43,9 @@ public class FWTokenService {
 
         System.out.println("This is the response: " + response);
         //todo: dont return empty string rather throw exception
-        return Optional.ofNullable(response).map(TokenResponse::accessToken).orElse("");
-*/
-        return "thats were i would add my secret token";
-
+        return Optional.ofNullable(response)
+                .map(TokenResponse::accessToken)
+                .orElseThrow(() -> new IllegalStateException("Token could not be fetched for the configured credentials!"));
     }
 
 

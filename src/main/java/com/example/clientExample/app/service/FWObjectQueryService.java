@@ -4,6 +4,7 @@ package com.example.clientExample.app.service;
 import com.example.clientExample.app.entities.rest.FWObject;
 import com.example.clientExample.app.entities.rest.FWObjectResponse;
 import com.example.clientExample.shared.FWAccessConfiguration;
+import com.example.clientExample.shared.TokenService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -17,13 +18,13 @@ import java.util.Optional;
 @Service
 public class FWObjectQueryService {
     private final RestClient restClient;
-    private final FWTokenService fwTokenService;
+    private final TokenService tokenService;
 
     private final FWAccessConfiguration config;
 
-    public FWObjectQueryService(RestClient restClient, FWTokenService fwTokenService, FWAccessConfiguration config) {
+    public FWObjectQueryService(RestClient restClient, TokenService tokenService, FWAccessConfiguration config) {
         this.restClient = restClient;
-        this.fwTokenService = fwTokenService;
+        this.tokenService = tokenService;
         this.config = config;
     }
 
@@ -37,7 +38,7 @@ public class FWObjectQueryService {
                         .queryParam("getOthers", 1)
                         .build())
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer "+ this.fwTokenService.getAuthToken())
+                //.header(HttpHeaders.AUTHORIZATION, "Bearer "+ this.fwTokenService.getAuthToken())
                 .retrieve()
                 .body(FWObjectResponse.class);
 

@@ -8,8 +8,8 @@ import com.example.clientExample.app.entities.view.FWEventView;
 import com.example.clientExample.app.entities.view.FWSearchResultEntryKey;
 import com.example.clientExample.app.entities.view.FWSearchResultEntryView;
 import com.example.clientExample.shared.FWAccessConfiguration;
+import com.example.clientExample.shared.TokenService;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -24,13 +24,13 @@ public class FWEventQueryService {
 
     public static final String PROJECT_EVENT_TYPE = "project";
     private final RestClient restClient;
-    private final FWTokenService fwTokenService;
+    private final TokenService tokenService;
     private final FWAccessConfiguration config;
     private final FWObjectQueryService objectQueryService;
 
-    public FWEventQueryService(RestClient restClient, FWTokenService fwTokenService, FWAccessConfiguration config, FWObjectQueryService objectQueryService) {
+    public FWEventQueryService(RestClient restClient, TokenService tokenService, FWAccessConfiguration config, FWObjectQueryService objectQueryService) {
         this.restClient = restClient;
-        this.fwTokenService = fwTokenService;
+        this.tokenService = tokenService;
         this.config = config;
         this.objectQueryService = objectQueryService;
     }
@@ -48,7 +48,7 @@ public class FWEventQueryService {
                         .queryParam("cursor", cursor)
                         .build()
                 )
-                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                //.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
                 .retrieve()
                 .body(FWEventResponse.class);
@@ -62,13 +62,13 @@ public class FWEventQueryService {
             return Collections.emptyList();
         }
 
-        String authToken = this.fwTokenService.getAuthToken();
+        //String authToken = this.fwTokenService.getAuthToken();
         List<FWEvent> filteredEvents = new ArrayList<>();
         Integer currentCursor = 1;
 
         while (currentCursor != null && currentCursor != 0) {
             // A broadcast day goes from 3:00 - 2:59, so we need to consider the next day as well
-            FWEventResponse response = retrieveAllProjectEventsByCursor(authToken, from, to.plusDays(1), currentCursor);
+            FWEventResponse response = retrieveAllProjectEventsByCursor("", from, to.plusDays(1), currentCursor);
             filteredEvents.addAll(this.filterByBroadcastTime(response.events(), from, to));
             currentCursor = response.nextCursor();
         }

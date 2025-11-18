@@ -5,7 +5,7 @@ import com.example.clientExample.app.entities.rest.FWProject;
 import com.example.clientExample.app.service.FWEventQueryService;
 import com.example.clientExample.app.service.FWObjectQueryService;
 import com.example.clientExample.app.service.FWProjectQueryService;
-import com.example.clientExample.app.service.FWTokenService;
+import com.example.clientExample.shared.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,13 +14,13 @@ import java.util.List;
 
 @RestController
 public class ExperimentalController {
-    private final FWTokenService fwTokenService;
+    private final TokenService tokenService;
     private final FWEventQueryService fwEventQueryService;
     private final FWObjectQueryService objectQueryService;
     private final FWProjectQueryService projectQueryService;
 
-    public ExperimentalController(FWTokenService fwTokenService, FWEventQueryService fwEventQueryService, FWObjectQueryService objectQueryService, FWProjectQueryService projectQueryService) {
-        this.fwTokenService = fwTokenService;
+    public ExperimentalController(TokenService tokenService, FWEventQueryService fwEventQueryService, FWObjectQueryService objectQueryService, FWProjectQueryService projectQueryService) {
+        this.tokenService = tokenService;
         this.fwEventQueryService = fwEventQueryService;
         this.objectQueryService = objectQueryService;
         this.projectQueryService = projectQueryService;
@@ -33,7 +33,7 @@ public class ExperimentalController {
 
     @GetMapping("/createtoken")
     public String createtoken() throws JsonProcessingException {
-        return "is it valid: " + fwTokenService.getAuthToken();
+        return "is it valid: " + tokenService.getAuthToken();
     }
     @GetMapping("/testquery")
     public String testQuery() {
