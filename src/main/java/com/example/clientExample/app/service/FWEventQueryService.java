@@ -144,6 +144,19 @@ public class FWEventQueryService {
 
     }
 
+    public List<FWSearchResultEntryView> retrieveTimelineViews(LocalDate from, LocalDate to, List<String> objectIds, List<String> projectIds, List<FWObject> allRoomObjects) {
+        List<FWSearchResultEntryView> views = retrieveSearchResultEntryView(from,to,objectIds,projectIds,allRoomObjects);
+
+        LocalDateTime now = LocalDateTime.now();
+        return IntStream.range(0, views.size())
+                .filter(i -> {
+                    LocalDateTime end = (i + 1 < views.size()) ? views.get(i + 1).sortTime() : null;
+                    return end == null || !now.isAfter(end); // keep if current time before next timestamp
+                })
+                .mapToObj(views::get)
+                .toList();
+
+    }
 
     public List<FWSearchResultEntryView> retrieveSearchResultEntryView(LocalDate from, LocalDate to, List<String> objectIds, List<String> projectIds, List<FWObject> allRoomObjects) {
         List<FWEvent> eventsByBroadcastTime = this.retrieveAllProjectEventsAccordingToBroadcastTime(from, to, objectIds, projectIds);

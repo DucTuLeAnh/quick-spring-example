@@ -50,6 +50,10 @@ public class RestClientConfig {
 
         // 3️⃣ Create Spring RestClient
         return RestClient.builder()
+                /* For some reason, on first token fetch, the tcp connection simply times out. If we force the execution with this,
+                 *  the request simply gets through.
+                 */
+                .requestInterceptor((request, body, execution) -> execution.execute(request, body))
                 .requestFactory(new HttpComponentsClientHttpRequestFactory(httpClient))
                 .build();
     }

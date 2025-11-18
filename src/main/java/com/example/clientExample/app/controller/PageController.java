@@ -102,7 +102,7 @@ public class PageController {
     public String timeline(Model model) {
         LocalDate now = LocalDate.now();
         List<FWObject> allRoomObjects = objectQueryService.retrieveAllRoomObjects();
-        List<FWSearchResultEntryView> entryViews = fwEventQueryService.retrieveSearchResultEntryView(now, now, Collections.emptyList(), Collections.emptyList(), allRoomObjects);
+        List<FWSearchResultEntryView> entryViews = fwEventQueryService.retrieveTimelineViews(now, now, Collections.emptyList(), Collections.emptyList(), allRoomObjects);
         model.addAttribute("entries", entryViews);
 
         return "timeline";
