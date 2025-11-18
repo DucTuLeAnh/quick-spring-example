@@ -60,7 +60,7 @@ public class TokenRefreshInterceptor implements ClientHttpRequestInterceptor {
                 return headers;
             }
         };
-
+        System.out.println("About to execute request");
         return execution.execute(retryRequest, body);
     }
 }

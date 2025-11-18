@@ -17,6 +17,7 @@ public record FWSearchResultEntryView(
         LocalDateTime sortTime,
         List<String> notes,
         List<String> customModerators,
-        List<String> customArts) {
+        List<String> customArts,
+        Boolean highlight) {
 
 }

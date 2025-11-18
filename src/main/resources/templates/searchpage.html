@@ -6,6 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+
         .multi-select {
             border: 1px solid #ced4da;
             border-radius: 0.25rem;
@@ -61,13 +62,27 @@
         .result-container{
           width: 100%;
         }
+        .sticky-search {
+          position: sticky;
+          top: 0; /* distance from top when sticky */
+          z-index: 1050; /* above table content */
+          background-color: #fff; /* ensures it covers content when scrolling */
+          padding-top: 1rem; /* optional spacing */
+          padding-bottom: 1rem;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* subtle shadow for separation */
+       }
+       
+       /* Highlight the entire row yellow */
+       tr.highlight-entry td {
+           background-color: #fff9c4 !important; /* soft yellow */
+       }
     </style>
 </head>
 <body>
 <div class="container py-5 d-flex flex-column align-items-center">
 
     <!-- Search Form -->
-    <div class="container-fluid py-4">
+    <div class="container-fluid py-4 sticky-search">
         <form id="searchForm" th:action="@{/search}" method="get">
 
             <div class="row g-4">
@@ -75,6 +90,8 @@
                 <!-- Start Date -->
                 <div class="col-md-3">
                     <label for="startDate" class="form-label">Startdatum</label>
+                    <a href="#" onclick="setToday(); return false;" class="ms-2">Heute</a>
+                    <a href="#" onclick="setTomorrow(); return false;" class="ms-2">Morgen</a>
                     <input type="date" class="form-control" id="startDate" name="startDate"
                            th:value="${startDate}">
                 </div>
@@ -144,7 +161,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="item : ${results}">
+                <tr th:each="item : ${results}"
+                    th:classappend="${item.highlight} ? 'highlight-entry' : 'non-highlight-entry'">
 
                     <td th:text="${item.dateInAsString}"></td>
                     <td th:text="${item.timeInAsString}"></td>
@@ -171,11 +189,34 @@
 
 
 <script>
+    function formatDate(date) {
+        return date.toISOString().split('T')[0]; // YYYY-MM-DD
+    }
+
+    function setToday() {
+        const today = new Date();
+        document.getElementById("startDate").value = formatDate(today);
+        document.getElementById("endDate").value = formatDate(today);
+    }
+
+    function setTomorrow() {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById("startDate").value = formatDate(tomorrow);
+        document.getElementById("endDate").value = formatDate(tomorrow);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('searchForm');
         if (!form) return;
         const startDateInput = document.getElementById('startDate');
         const endDateInput = document.getElementById('endDate');
+        setToday()
+
+
+        //jump to highlighted entry
+        const el = document.querySelector(".highlight-entry");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
 
         startDateInput.addEventListener('change', () => {
             if (!endDateInput.value || endDateInput.value < startDateInput.value) {
@@ -288,6 +329,7 @@
             renderTags();
         });
     });
+
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

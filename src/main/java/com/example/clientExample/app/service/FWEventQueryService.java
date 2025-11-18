@@ -9,7 +9,6 @@ import com.example.clientExample.app.entities.view.FWSearchResultEntryKey;
 import com.example.clientExample.app.entities.view.FWSearchResultEntryView;
 import com.example.clientExample.shared.FWAccessConfiguration;
 import com.example.clientExample.shared.TokenService;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -18,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class FWEventQueryService {
@@ -157,6 +157,8 @@ public class FWEventQueryService {
 
         List<FWSearchResultEntryView> views = this.mapToFWSearchResultEntryViews(groupedBySearchResultEntryKey, allRoomObjects);
 
+        highlightFirstMatchingView(views);
+
         Set<String> projectIdSet = new HashSet<>(projectIds);
         return views.stream()
                 .filter(view ->
@@ -165,6 +167,36 @@ public class FWEventQueryService {
                 )
                 .toList();
 
+    }
+
+    private void highlightFirstMatchingView(List<FWSearchResultEntryView> views) {
+        LocalDateTime now = LocalDateTime.now();
+        Optional<Integer> opt = IntStream.range(0, views.size())
+                .filter(i -> !views.get(i).sortTime().isAfter(now))
+                .boxed()
+                .max(Comparator.comparing(i -> views.get(i).sortTime()));
+
+        opt.ifPresent(i -> {
+            FWSearchResultEntryView old = views.get(i);
+            FWSearchResultEntryView updated = new FWSearchResultEntryView(
+                    old.mainKey(),
+                    old.entryHeader(),
+                    old.projectIds(),
+                    old.objectIds(),
+                    old.objectNames(),
+                    old.timeInAsString(),
+                    old.timeOutAsString(),
+                    old.dateInAsString(),
+                    old.dateOutAsString(),
+                    old.sortTime(),
+                    old.notes(),
+                    old.customModerators(),
+                    old.customArts(),
+                    true
+
+            );
+            views.set(i, updated);
+        });
     }
 
     private List<FWSearchResultEntryView> mapToFWSearchResultEntryViews(Map<FWSearchResultEntryKey, List<FWEvent>> grouped, List<FWObject> allRoomObjects) {
@@ -262,7 +294,7 @@ public class FWEventQueryService {
                     .distinct()
                     .toList();
 
-            searchResultEntryViews.add(new FWSearchResultEntryView(key, entryHeader, projectIds, objectIds, objectNames, timeInAsString, timeOutAsString,dateInAsString, dateOutAsString, sortTime, notes, customModerators, customArts));
+            searchResultEntryViews.add(new FWSearchResultEntryView(key, entryHeader, projectIds, objectIds, objectNames, timeInAsString, timeOutAsString,dateInAsString, dateOutAsString, sortTime, notes, customModerators, customArts, false));
         }
 
         searchResultEntryViews.sort(Comparator.comparing(FWSearchResultEntryView::sortTime));

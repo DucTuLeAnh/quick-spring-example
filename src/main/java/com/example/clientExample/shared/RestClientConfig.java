@@ -1,9 +1,14 @@
 package com.example.clientExample.shared;
 
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.util.Timeout;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
@@ -13,6 +18,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeUnit;
 
 
 @Configuration
@@ -30,14 +36,30 @@ public class RestClientConfig {
     @Bean
     @Qualifier("tokenClient")
     public RestClient tokenClient() {
+        // 1️⃣ Build RequestConfig with timeouts
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(Timeout.ofSeconds(5)) // time to get connection from pool
+                //.setConnectTimeout(Timeout.ofSeconds(5))           // TCP handshake
+                .setResponseTimeout(Timeout.ofSeconds(5))          // wait for server response
+                .build();
+
+        // 2️⃣ Build HttpClient using the RequestConfig
+        CloseableHttpClient httpClient = HttpClientBuilder.create()
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+
+        // 3️⃣ Create Spring RestClient
         return RestClient.builder()
+                .requestFactory(new HttpComponentsClientHttpRequestFactory(httpClient))
                 .build();
     }
 
     @Bean
     @Profile("test")
     public RestClient restClient(RestClient.Builder restClientBuilder, TokenRefreshInterceptor interceptor) throws Exception {
-        return restClientBuilder.requestInterceptor((request, body, execution) -> {
+        return restClientBuilder.
+                requestInterceptor(interceptor)
+                .requestInterceptor((request, body, execution) -> {
                     long start = System.currentTimeMillis();
                     try {
                         System.out.printf("➡️ Sending %s %s%n", request.getMethod(), request.getURI());
@@ -57,7 +79,7 @@ public class RestClientConfig {
                         throw e;
                     }
                 })
-                .requestInterceptor(interceptor)
+
                 .build();
     }
 

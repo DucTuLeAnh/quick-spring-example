@@ -38,7 +38,7 @@ public class FWObjectQueryService {
                         .queryParam("getOthers", 1)
                         .build())
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                //.header(HttpHeaders.AUTHORIZATION, "Bearer "+ this.fwTokenService.getAuthToken())
+              //  .header(HttpHeaders.AUTHORIZATION, "Bearer "+ this.fwTokenService.getAuthToken())
                 .retrieve()
                 .body(FWObjectResponse.class);
 
