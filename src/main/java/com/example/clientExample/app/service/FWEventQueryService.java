@@ -49,7 +49,7 @@ public class FWEventQueryService {
                         .build()
                 )
                 //.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
+                //.header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
                 .retrieve()
                 .body(FWEventResponse.class);
 
